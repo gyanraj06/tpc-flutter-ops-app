@@ -25,6 +25,10 @@ mixin _$UserModel {
   String get email => throw _privateConstructorUsedError;
   String get role => throw _privateConstructorUsedError;
   String get scannerId => throw _privateConstructorUsedError;
+  String get vendorId => throw _privateConstructorUsedError;
+  String? get phoneNumber => throw _privateConstructorUsedError;
+  String get username => throw _privateConstructorUsedError;
+  bool get isActive => throw _privateConstructorUsedError;
 
   /// Serializes this UserModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -42,7 +46,15 @@ abstract class $UserModelCopyWith<$Res> {
       _$UserModelCopyWithImpl<$Res, UserModel>;
   @useResult
   $Res call(
-      {String id, String name, String email, String role, String scannerId});
+      {String id,
+      String name,
+      String email,
+      String role,
+      String scannerId,
+      String vendorId,
+      String? phoneNumber,
+      String username,
+      bool isActive});
 }
 
 /// @nodoc
@@ -65,6 +77,10 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
     Object? email = null,
     Object? role = null,
     Object? scannerId = null,
+    Object? vendorId = null,
+    Object? phoneNumber = freezed,
+    Object? username = null,
+    Object? isActive = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -87,6 +103,22 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
           ? _value.scannerId
           : scannerId // ignore: cast_nullable_to_non_nullable
               as String,
+      vendorId: null == vendorId
+          ? _value.vendorId
+          : vendorId // ignore: cast_nullable_to_non_nullable
+              as String,
+      phoneNumber: freezed == phoneNumber
+          ? _value.phoneNumber
+          : phoneNumber // ignore: cast_nullable_to_non_nullable
+              as String?,
+      username: null == username
+          ? _value.username
+          : username // ignore: cast_nullable_to_non_nullable
+              as String,
+      isActive: null == isActive
+          ? _value.isActive
+          : isActive // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -100,7 +132,15 @@ abstract class _$$UserModelImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String id, String name, String email, String role, String scannerId});
+      {String id,
+      String name,
+      String email,
+      String role,
+      String scannerId,
+      String vendorId,
+      String? phoneNumber,
+      String username,
+      bool isActive});
 }
 
 /// @nodoc
@@ -121,6 +161,10 @@ class __$$UserModelImplCopyWithImpl<$Res>
     Object? email = null,
     Object? role = null,
     Object? scannerId = null,
+    Object? vendorId = null,
+    Object? phoneNumber = freezed,
+    Object? username = null,
+    Object? isActive = null,
   }) {
     return _then(_$UserModelImpl(
       id: null == id
@@ -143,6 +187,22 @@ class __$$UserModelImplCopyWithImpl<$Res>
           ? _value.scannerId
           : scannerId // ignore: cast_nullable_to_non_nullable
               as String,
+      vendorId: null == vendorId
+          ? _value.vendorId
+          : vendorId // ignore: cast_nullable_to_non_nullable
+              as String,
+      phoneNumber: freezed == phoneNumber
+          ? _value.phoneNumber
+          : phoneNumber // ignore: cast_nullable_to_non_nullable
+              as String?,
+      username: null == username
+          ? _value.username
+          : username // ignore: cast_nullable_to_non_nullable
+              as String,
+      isActive: null == isActive
+          ? _value.isActive
+          : isActive // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -155,7 +215,11 @@ class _$UserModelImpl implements _UserModel {
       required this.name,
       required this.email,
       required this.role,
-      required this.scannerId});
+      required this.scannerId,
+      required this.vendorId,
+      this.phoneNumber,
+      required this.username,
+      required this.isActive});
 
   factory _$UserModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserModelImplFromJson(json);
@@ -170,10 +234,18 @@ class _$UserModelImpl implements _UserModel {
   final String role;
   @override
   final String scannerId;
+  @override
+  final String vendorId;
+  @override
+  final String? phoneNumber;
+  @override
+  final String username;
+  @override
+  final bool isActive;
 
   @override
   String toString() {
-    return 'UserModel(id: $id, name: $name, email: $email, role: $role, scannerId: $scannerId)';
+    return 'UserModel(id: $id, name: $name, email: $email, role: $role, scannerId: $scannerId, vendorId: $vendorId, phoneNumber: $phoneNumber, username: $username, isActive: $isActive)';
   }
 
   @override
@@ -186,13 +258,21 @@ class _$UserModelImpl implements _UserModel {
             (identical(other.email, email) || other.email == email) &&
             (identical(other.role, role) || other.role == role) &&
             (identical(other.scannerId, scannerId) ||
-                other.scannerId == scannerId));
+                other.scannerId == scannerId) &&
+            (identical(other.vendorId, vendorId) ||
+                other.vendorId == vendorId) &&
+            (identical(other.phoneNumber, phoneNumber) ||
+                other.phoneNumber == phoneNumber) &&
+            (identical(other.username, username) ||
+                other.username == username) &&
+            (identical(other.isActive, isActive) ||
+                other.isActive == isActive));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, name, email, role, scannerId);
+  int get hashCode => Object.hash(runtimeType, id, name, email, role, scannerId,
+      vendorId, phoneNumber, username, isActive);
 
   /// Create a copy of UserModel
   /// with the given fields replaced by the non-null parameter values.
@@ -216,7 +296,11 @@ abstract class _UserModel implements UserModel {
       required final String name,
       required final String email,
       required final String role,
-      required final String scannerId}) = _$UserModelImpl;
+      required final String scannerId,
+      required final String vendorId,
+      final String? phoneNumber,
+      required final String username,
+      required final bool isActive}) = _$UserModelImpl;
 
   factory _UserModel.fromJson(Map<String, dynamic> json) =
       _$UserModelImpl.fromJson;
@@ -231,6 +315,14 @@ abstract class _UserModel implements UserModel {
   String get role;
   @override
   String get scannerId;
+  @override
+  String get vendorId;
+  @override
+  String? get phoneNumber;
+  @override
+  String get username;
+  @override
+  bool get isActive;
 
   /// Create a copy of UserModel
   /// with the given fields replaced by the non-null parameter values.

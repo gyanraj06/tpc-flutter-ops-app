@@ -40,19 +40,19 @@ dependencies:
   intl: ^0.19.0
   uuid: ^4.4.0
   permission_handler: ^12.0.1
+  http: ^1.5.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
-
+  flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.4.0
   # Code Generation
   build_runner: ^2.4.9
   freezed: ^2.5.2
   json_serializable: ^6.8.0
   riverpod_generator: ^2.4.0
-  flutter_launcher_icons: ^0.13.1
-  flutter_native_splash: ^2.4.0
 
 flutter:
   uses-material-design: true
@@ -61,3 +61,9 @@ flutter:
     - assets/images/
     - assets/animations/
     - assets/sounds/
+    - assets/icon/
+    
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/app_icon.png"

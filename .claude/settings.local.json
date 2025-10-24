@@ -16,7 +16,13 @@
       "Bash(export SCANNER_API_KEY=\"scanner_api_key_12345\")",
       "Bash(npx tsx:*)",
       "Bash(curl:*)",
-      "Bash(flutter pub add:*)"
+      "Bash(flutter pub add:*)",
+      "Bash(flutter pub run build_runner build:*)",
+      "Bash(adb devices:*)",
+      "Bash(ipconfig:*)",
+      "Bash(findstr:*)",
+      "Bash(flutter pub get:*)",
+      "Bash(flutter pub run:*)"
     ],
     "deny": [],
     "ask": []

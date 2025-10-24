@@ -3,7 +3,8 @@ CREATE OR REPLACE FUNCTION verify_and_use_ticket(
   p_qr_data TEXT,
   p_signature TEXT,
   p_scanner_id VARCHAR DEFAULT 'default-scanner',
-  p_scan_notes TEXT DEFAULT NULL
+  p_scan_notes TEXT DEFAULT NULL,
+  p_vendor_id UUID DEFAULT NULL
 )
 RETURNS JSON AS $$
 DECLARE
@@ -68,6 +69,17 @@ BEGIN
   SELECT * INTO v_batch
   FROM bulk_ticket_batches
   WHERE id = v_ticket.batch_id;
+
+  -- Check vendor authorization if vendor_id is provided
+  IF p_vendor_id IS NOT NULL AND v_batch.vendor_id != p_vendor_id THEN
+    RETURN json_build_object(
+      'status', 'invalid',
+      'message', 'Unauthorized - This ticket does not belong to your vendor',
+      'isValid', false,
+      'ticketCode', v_ticket.ticket_number,
+      'errorReason', 'You are not authorized to scan this ticket'
+    );
+  END IF;
 
   -- Check if ticket is valid
   IF NOT v_ticket.is_valid THEN

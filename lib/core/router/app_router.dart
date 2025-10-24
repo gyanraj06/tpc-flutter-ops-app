@@ -14,14 +14,10 @@ final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authProvider);
 
   return GoRouter(
-    initialLocation: RouteConstants.splash,
+    initialLocation: RouteConstants.login,
     redirect: (context, state) {
       final isLoggedIn = authState.isLoggedIn;
-      final isSplash = state.matchedLocation == RouteConstants.splash;
       final isLogin = state.matchedLocation == RouteConstants.login;
-
-      // If on splash, let it load
-      if (isSplash) return null;
 
       // If not logged in and not on login, redirect to login
       if (!isLoggedIn && !isLogin) return RouteConstants.login;

@@ -12,6 +12,10 @@ class UserModel with _$UserModel {
     required String email,
     required String role,
     required String scannerId,
+    required String vendorId,
+    String? phoneNumber,
+    required String username,
+    required bool isActive,
   }) = _UserModel;
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>
@@ -26,6 +30,10 @@ extension UserModelX on UserModel {
       email: email,
       role: role,
       scannerId: scannerId,
+      vendorId: vendorId,
+      phoneNumber: phoneNumber,
+      username: username,
+      isActive: isActive,
     );
   }
 }

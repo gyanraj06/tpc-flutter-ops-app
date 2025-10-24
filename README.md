@@ -1,133 +1,139 @@
-# TPC Ops - Premium Ticket Scanning Application
+# TPC Ops - Ticket Scanner App
 
-A modern, polished Flutter application for ticket scanning operations with Clean Architecture and Riverpod state management.
+Mobile application for scanning QR-coded event tickets with vendor-based access control.
 
-## Features
+## 🚀 Quick Start
 
-✅ **Authentication System**
-- Mock authentication (ready for backend integration)
-- Persistent login state
-- Smooth splash screen animation
-
-✅ **QR Code Scanner**
-- Real-time QR code scanning with mobile_scanner
-- Three scan states: Valid, Already Scanned, Invalid
-- Haptic and sound feedback
-- Animated result cards
-
-✅ **Dashboard**
-- Real-time statistics
-- Today's scan summary
-- Recent scans list
-- Greeting based on time of day
-
-✅ **Scan History**
-- Complete scan history with stats
-- Pull-to-refresh functionality
-- Search and filter capabilities
-- Detailed scan information
-
-✅ **Profile Management**
-- User profile display
-- App settings (Sound, Haptic, Dark Mode)
-- Logout with confirmation
-
-## Tech Stack
-
-- **Flutter** - Latest version
-- **Riverpod** - State management
-- **go_router** - Navigation
-- **mobile_scanner** - QR code scanning
-- **freezed** - Immutable models
-- **shared_preferences** - Local storage
-- **Google Fonts** - Typography
-
-## Getting Started
-
-### Prerequisites
-
-- Flutter SDK (>=3.0.0)
-- Dart SDK
-- Android Studio / Xcode for mobile development
-
-### Installation
-
-1. **Install dependencies**
-   ```bash
-   flutter pub get
-   ```
-
-2. **Run code generation** (if needed)
-   ```bash
-   flutter pub run build_runner build --delete-conflicting-outputs
-   ```
-
-3. **Run the app**
-   ```bash
-   flutter run
-   ```
-
-## Test Credentials
-
-```
-Email: admin@tpc.com
-Password: admin123
-```
-
-## App Screens
-
-1. **Splash Screen** - Animated logo with auto-navigation
-2. **Login Screen** - Email/password authentication
-3. **Home Screen** - Dashboard with stats and recent scans
-4. **Scanner Screen** - QR code scanner with feedback
-5. **Scan History** - Complete history with filters
-6. **Profile Screen** - User settings and preferences
-
-## Mock Data System
-
-The app includes a robust mock data system:
-
-- 200 mock tickets with randomized data
-- Random scan validation (70% valid, 20% duplicate, 10% invalid)
-- Time-stamped scan history
-- Real-time statistics
-
-## Build Commands
-
-### Development
+### For Development
 ```bash
-flutter run
+flutter run --dart-define=API_BASE_URL=http://192.168.1.6:3001
 ```
 
-### Release (Android)
+### For Production Build
 ```bash
-flutter build apk --release
+build-prod.bat
+```
+Output: `build/app/outputs/flutter-apk/app-release.apk`
+
+## 📖 Complete Documentation
+
+**👉 See [DOCUMENTATION.md](DOCUMENTATION.md) for complete setup, architecture, and deployment guide.**
+
+## 🏗️ Project Structure
+
+```
+lib/
+├── core/
+│   ├── constants/
+│   │   └── app_config.dart          # Environment configuration
+│   ├── router/
+│   │   └── app_router.dart          # Navigation
+│   └── theme/
+│       └── app_colors.dart          # Branding
+├── features/
+│   ├── auth/
+│   │   ├── data/repositories/
+│   │   │   └── auth_repository.dart # Login logic
+│   │   └── presentation/screens/
+│   │       └── login_screen.dart    # Login UI
+│   └── scanner/
+│       ├── data/repositories/
+│       │   └── scanner_repository.dart # Ticket validation
+│       └── presentation/screens/
+│           └── scanner_screen.dart  # QR scanner UI
 ```
 
-### Release (iOS)
+## 🔑 Key Features
+
+- **Authentication:** Login via vendor portal API
+- **QR Scanning:** Camera-based ticket scanning
+- **Security:** HMAC-SHA256 signature verification
+- **Vendor Isolation:** Members can only scan their vendor's tickets
+- **Offline Capable:** Local session storage
+
+## 🛠️ Tech Stack
+
+- **Flutter/Dart** - Mobile framework
+- **Supabase** - Database & serverless functions
+- **Vendor Portal API** - Authentication & member management
+- **PostgreSQL** - Ticket data storage
+
+## 📦 Dependencies
+
+Key packages:
+- `supabase_flutter` - Database client
+- `mobile_scanner` - QR code scanning
+- `http` - API calls
+- `flutter_riverpod` - State management
+- `go_router` - Navigation
+
+## 🌍 Environment Configuration
+
+**Production:** `https://vendor.trippechalo.in`
+**Development:** `http://192.168.1.6:3001`
+
+Configured via `--dart-define` flags at build time.
+
+## 📱 Build Commands
+
+**Development APK:**
 ```bash
-flutter build ios --release
+build-dev.bat
 ```
 
-## Camera Permissions
-
-### Android
-Add to `android/app/src/main/AndroidManifest.xml`:
-```xml
-<uses-permission android:name="android.permission.CAMERA" />
+**Production APK:**
+```bash
+build-prod.bat
 ```
 
-### iOS
-Add to `ios/Runner/Info.plist`:
-```xml
-<key>NSCameraUsageDescription</key>
-<string>This app needs camera access to scan QR codes</string>
+**Play Store Bundle:**
+```bash
+flutter build appbundle --release \
+  --dart-define=API_BASE_URL=https://vendor.trippechalo.in \
+  --dart-define=PRODUCTION=true
 ```
 
-## License
+## 🗄️ Database Setup
 
-© 2025 TPC Ops. All rights reserved.
+Run [supabase_function.sql](supabase_function.sql) in Supabase SQL Editor to create the `verify_and_use_ticket` function.
+
+## 🎨 Customization
+
+- **App Icon:** `assets/icon/app_icon.png`
+- **Colors:** `lib/core/theme/app_colors.dart`
+- **Branding:** "TPC Ops"
+
+## 📝 Documentation
+
+- **[DOCUMENTATION.md](DOCUMENTATION.md)** - Complete technical documentation
+- **[supabase_function.sql](supabase_function.sql)** - Database function setup
+- **[.env.development](.env.development)** - Dev environment config
+- **[.env.production](.env.production)** - Prod environment config
+
+## 🧪 Testing
+
+```bash
+# Test with development API
+flutter run --dart-define=API_BASE_URL=http://192.168.1.6:3001
+
+# Test with production API
+flutter run --dart-define=API_BASE_URL=https://vendor.trippechalo.in
+```
+
+## 🚀 Deployment
+
+1. Build production APK: `build-prod.bat`
+2. Test on physical device
+3. Upload to Play Store or distribute directly
+
+## 📞 Support
+
+For detailed setup, architecture, API documentation, and troubleshooting:
+
+**👉 Read [DOCUMENTATION.md](DOCUMENTATION.md)**
 
 ---
 
 **Version:** 1.0.0
+**Platform:** Flutter (Android/iOS)
+**Production URL:** https://vendor.trippechalo.in

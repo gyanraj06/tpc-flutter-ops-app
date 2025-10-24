@@ -1,10 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/repositories/scanner_repository.dart';
 import '../../domain/entities/scan_result.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
 
 // Repository Provider
 final scannerRepositoryProvider = Provider<ScannerRepository>((ref) {
-  return ScannerRepository();
+  final prefs = ref.watch(sharedPreferencesProvider);
+  return ScannerRepository(prefs);
 });
 
 // Scan History Provider

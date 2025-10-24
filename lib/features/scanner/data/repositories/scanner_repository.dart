@@ -1,11 +1,16 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../../domain/entities/scan_result.dart';
 import '../../../../core/utils/logger.dart';
+import '../../../../core/constants/storage_keys.dart';
 
 class ScannerRepository {
   final SupabaseClient _supabase = Supabase.instance.client;
+  final SharedPreferences _prefs;
   final List<ScanResult> _scanHistory = [];
+
+  ScannerRepository(this._prefs);
 
   /// Validate ticket by calling Supabase function
   Future<ScanResult> validateTicket(String qrCode) async {
@@ -25,12 +30,19 @@ class ScannerRepository {
       // The rest is the ticket data
       data = jsonEncode(qrData);
 
-      // Call Supabase function
+      // Get vendor_id from session
+      final vendorId = _prefs.getString(StorageKeys.vendorId);
+      final scannerId = _prefs.getString(StorageKeys.userId) ?? 'flutter-scanner-01';
+
+      AppLogger.info('Scanning with vendor_id: $vendorId, scanner_id: $scannerId');
+
+      // Call Supabase function with vendor_id
       final response = await _supabase.rpc('verify_and_use_ticket', params: {
         'p_qr_data': data,
         'p_signature': signature,
-        'p_scanner_id': 'flutter-scanner-01',
+        'p_scanner_id': scannerId,
         'p_scan_notes': 'Scanned via Flutter app',
+        'p_vendor_id': vendorId,
       });
 
       AppLogger.info('Supabase response: $response');

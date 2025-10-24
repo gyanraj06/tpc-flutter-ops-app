@@ -4,6 +4,10 @@ class User {
   final String email;
   final String role;
   final String scannerId;
+  final String vendorId;
+  final String? phoneNumber;
+  final String username;
+  final bool isActive;
 
   const User({
     required this.id,
@@ -11,5 +15,9 @@ class User {
     required this.email,
     required this.role,
     required this.scannerId,
+    required this.vendorId,
+    this.phoneNumber,
+    required this.username,
+    required this.isActive,
   });
 }
