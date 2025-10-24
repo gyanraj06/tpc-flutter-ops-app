@@ -49,3 +49,7 @@ app.*.map.json
 *.bat
 *.sql
 .qwen 
+.env.production
+.env.staging
+.env.development
+.metadata
