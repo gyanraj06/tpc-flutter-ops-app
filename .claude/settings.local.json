@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install)",
+      "Bash(npm run dev:*)",
+      "Bash(set -a)",
+      "Bash(source .env)",
+      "Bash(set +a)",
+      "Bash(taskkill:*)",
+      "Bash(cat:*)",
+      "Bash(npm run build:*)",
+      "Bash(node dist/index.js:*)",
+      "Bash(export QR_SECRET_KEY=\"14dc0142f09d636f82a8004dd76f9049c1feb59132cb02b78328be791240de79\")",
+      "Bash(export VITE_SUPABASE_URL=\"https://yxulmlparmwdbxhbvkcp.supabase.co\":*)",
+      "Bash(export SUPABASE_SERVICE_ROLE_KEY:*)",
+      "Bash(export SCANNER_API_KEY=\"scanner_api_key_12345\")",
+      "Bash(npx tsx:*)",
+      "Bash(curl:*)",
+      "Bash(flutter pub add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
