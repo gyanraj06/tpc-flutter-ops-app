@@ -130,4 +130,86 @@ class ScannerRepository {
           s.scannedAt.day == today.day;
     }).length;
   }
+
+  /// Validate ticket manually by ticket number (no QR signature verification)
+  Future<ScanResult> validateTicketManually(String ticketNumber) async {
+    AppLogger.info('Validating ticket manually: $ticketNumber');
+
+    try {
+      // Get vendor_id from session
+      final vendorId = _prefs.getString(StorageKeys.vendorId);
+      final scannerId = _prefs.getString(StorageKeys.userId) ?? 'flutter-scanner-01';
+
+      AppLogger.info('Manual scan with vendor_id: $vendorId, scanner_id: $scannerId');
+
+      // Call Supabase function for manual verification
+      final response = await _supabase.rpc('verify_ticket_by_number', params: {
+        'p_ticket_number': ticketNumber.toUpperCase(), // Convert to uppercase for consistency
+        'p_scanner_id': scannerId,
+        'p_scan_notes': 'Manual entry via Flutter app',
+        'p_vendor_id': vendorId,
+      });
+
+      AppLogger.info('Supabase manual verification response: $response');
+
+      // Parse response
+      final result = response as Map<String, dynamic>;
+      final status = result['status'] as String;
+
+      ScanResult scanResult;
+
+      switch (status) {
+        case 'valid':
+          scanResult = ScanResult.valid(
+            ticketCode: result['ticketCode'] ?? 'Unknown',
+            attendeeName: result['attendeeName'] ?? 'Unknown',
+            ticketType: result['ticketType'] ?? 'Unknown',
+            eventName: result['eventName'] ?? 'Unknown Event',
+            scanMethod: ScanMethod.manual,
+          );
+          break;
+
+        case 'already_scanned':
+          scanResult = ScanResult.alreadyScanned(
+            ticketCode: result['ticketCode'] ?? 'Unknown',
+            attendeeName: result['attendeeName'] ?? 'Unknown',
+            ticketType: result['ticketType'] ?? 'Unknown',
+            eventName: result['eventName'] ?? 'Unknown Event',
+            previousScanTime: result['previousScanTime'] != null
+                ? DateTime.parse(result['previousScanTime'])
+                : DateTime.now(),
+            scannedBy: result['scannedBy'] ?? 'Unknown',
+            scanMethod: ScanMethod.manual,
+          );
+          break;
+
+        case 'invalid':
+        default:
+          scanResult = ScanResult.invalid(
+            ticketCode: result['ticketCode'] ?? ticketNumber,
+            errorReason: result['errorReason'] ?? result['message'] ?? 'Invalid ticket',
+            scanMethod: ScanMethod.manual,
+          );
+          break;
+      }
+
+      // Add to history
+      _scanHistory.insert(0, scanResult);
+
+      AppLogger.info('Manual scan result: ${scanResult.status}');
+      return scanResult;
+
+    } catch (e, stackTrace) {
+      AppLogger.error('Error validating ticket manually', error: e, stackTrace: stackTrace);
+
+      final scanResult = ScanResult.invalid(
+        ticketCode: ticketNumber,
+        errorReason: 'Error: ${e.toString()}',
+        scanMethod: ScanMethod.manual,
+      );
+
+      _scanHistory.insert(0, scanResult);
+      return scanResult;
+    }
+  }
 }

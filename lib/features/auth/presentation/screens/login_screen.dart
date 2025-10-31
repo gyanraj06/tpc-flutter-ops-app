@@ -196,41 +196,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           ),
                           const SizedBox(height: 24),
 
-                          // Support Text
-                          Text(
-                            'Having trouble?',
-                            style: AppTextStyles.bodyMedium.copyWith(
-                              color: AppColors.grey600,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 4),
-                          TextButton(
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: const Text('Test Credentials'),
-                                  content: const Text(
-                                    'Email: admin@tpc.com\nPassword: admin123',
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context),
-                                      child: const Text('OK'),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                            child: Text(
-                              'Contact Admin',
-                              style: AppTextStyles.bodyMedium.copyWith(
-                                color: AppColors.primary,
-                                decoration: TextDecoration.underline,
-                              ),
-                            ),
-                          ),
+                         
                         ],
                       ),
                     ),

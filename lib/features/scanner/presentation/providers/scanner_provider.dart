@@ -52,6 +52,23 @@ class ScannerActions {
     return result;
   }
 
+  Future<ScanResult> scanTicketManually(String ticketNumber) async {
+    final repository = ref.read(scannerRepositoryProvider);
+    final result = await repository.validateTicketManually(ticketNumber);
+
+    // Update history
+    final currentHistory = ref.read(scanHistoryProvider);
+    ref.read(scanHistoryProvider.notifier).state = [result, ...currentHistory];
+
+    // Update stats
+    ref.read(statsProvider.notifier).state = repository.getStats();
+
+    // Update today count
+    ref.read(todayScansCountProvider.notifier).state = repository.getTodayScansCount();
+
+    return result;
+  }
+
   void refreshHistory() {
     final repository = ref.read(scannerRepositoryProvider);
     ref.read(scanHistoryProvider.notifier).state = repository.getScanHistory();

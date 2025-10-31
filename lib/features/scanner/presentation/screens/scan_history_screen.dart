@@ -150,9 +150,56 @@ class ScanHistoryScreen extends ConsumerWidget {
           ),
           child: Icon(icon, color: color),
         ),
-        title: Text(
-          scan.attendeeName ?? 'Invalid Code',
-          style: AppTextStyles.titleMedium,
+        title: Row(
+          children: [
+            Expanded(
+              child: Text(
+                scan.attendeeName ?? 'Invalid Code',
+                style: AppTextStyles.titleMedium,
+              ),
+            ),
+            // Scan method badge
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: scan.scanMethod == ScanMethod.manual
+                    ? AppColors.info.withOpacity(0.1)
+                    : AppColors.primary.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(
+                  color: scan.scanMethod == ScanMethod.manual
+                      ? AppColors.info
+                      : AppColors.primary,
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    scan.scanMethod == ScanMethod.manual
+                        ? Icons.keyboard
+                        : Icons.qr_code_scanner,
+                    size: 12,
+                    color: scan.scanMethod == ScanMethod.manual
+                        ? AppColors.info
+                        : AppColors.primary,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    scan.scanMethod == ScanMethod.manual ? 'MANUAL' : 'QR',
+                    style: AppTextStyles.caption.copyWith(
+                      color: scan.scanMethod == ScanMethod.manual
+                          ? AppColors.info
+                          : AppColors.primary,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 10,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

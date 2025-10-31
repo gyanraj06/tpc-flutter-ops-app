@@ -1,4 +1,5 @@
 enum ScanStatus { valid, alreadyScanned, invalid }
+enum ScanMethod { qr, manual }
 
 class ScanResult {
   final ScanStatus status;
@@ -10,6 +11,7 @@ class ScanResult {
   final String? scannedBy;
   final String? errorReason;
   final DateTime scannedAt;
+  final ScanMethod scanMethod;
 
   const ScanResult({
     required this.status,
@@ -21,6 +23,7 @@ class ScanResult {
     this.scannedBy,
     this.errorReason,
     required this.scannedAt,
+    this.scanMethod = ScanMethod.qr,
   });
 
   factory ScanResult.valid({
@@ -28,6 +31,7 @@ class ScanResult {
     required String attendeeName,
     required String ticketType,
     required String eventName,
+    ScanMethod scanMethod = ScanMethod.qr,
   }) {
     return ScanResult(
       status: ScanStatus.valid,
@@ -36,6 +40,7 @@ class ScanResult {
       ticketType: ticketType,
       eventName: eventName,
       scannedAt: DateTime.now(),
+      scanMethod: scanMethod,
     );
   }
 
@@ -46,6 +51,7 @@ class ScanResult {
     required String eventName,
     required DateTime previousScanTime,
     String? scannedBy,
+    ScanMethod scanMethod = ScanMethod.qr,
   }) {
     return ScanResult(
       status: ScanStatus.alreadyScanned,
@@ -56,18 +62,21 @@ class ScanResult {
       previousScanTime: previousScanTime,
       scannedBy: scannedBy,
       scannedAt: DateTime.now(),
+      scanMethod: scanMethod,
     );
   }
 
   factory ScanResult.invalid({
     required String ticketCode,
     String? errorReason,
+    ScanMethod scanMethod = ScanMethod.qr,
   }) {
     return ScanResult(
       status: ScanStatus.invalid,
       ticketCode: ticketCode,
       errorReason: errorReason ?? 'Ticket not found in database',
       scannedAt: DateTime.now(),
+      scanMethod: scanMethod,
     );
   }
 }

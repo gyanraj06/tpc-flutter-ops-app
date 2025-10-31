@@ -142,3 +142,120 @@ BEGIN
   );
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Manual Ticket Entry Function (No signature verification)
+CREATE OR REPLACE FUNCTION verify_ticket_by_number(
+  p_ticket_number VARCHAR,
+  p_scanner_id VARCHAR DEFAULT 'default-scanner',
+  p_scan_notes TEXT DEFAULT NULL,
+  p_vendor_id UUID DEFAULT NULL
+)
+RETURNS JSON AS $$
+DECLARE
+  v_ticket bulk_tickets%ROWTYPE;
+  v_batch bulk_ticket_batches%ROWTYPE;
+  v_booking RECORD;
+BEGIN
+  -- Lock and fetch ticket
+  SELECT * INTO v_ticket
+  FROM bulk_tickets
+  WHERE ticket_number = p_ticket_number
+  FOR UPDATE;
+
+  -- Check if ticket exists
+  IF NOT FOUND THEN
+    RETURN json_build_object(
+      'status', 'invalid',
+      'message', 'Ticket not found',
+      'isValid', false,
+      'ticketCode', p_ticket_number,
+      'errorReason', 'Ticket does not exist in database'
+    );
+  END IF;
+
+  -- Fetch batch info
+  SELECT * INTO v_batch
+  FROM bulk_ticket_batches
+  WHERE id = v_ticket.batch_id;
+
+  -- Check vendor authorization if vendor_id is provided
+  IF p_vendor_id IS NOT NULL AND v_batch.vendor_id != p_vendor_id THEN
+    RETURN json_build_object(
+      'status', 'invalid',
+      'message', 'Unauthorized - This ticket does not belong to your vendor',
+      'isValid', false,
+      'ticketCode', v_ticket.ticket_number,
+      'errorReason', 'You are not authorized to scan this ticket'
+    );
+  END IF;
+
+  -- Check booking approval status if booking_id exists
+  IF v_ticket.booking_id IS NOT NULL THEN
+    SELECT is_approved INTO v_booking
+    FROM bookings
+    WHERE id = v_ticket.booking_id;
+
+    -- If booking exists and is explicitly rejected (is_approved = false)
+    IF v_booking.is_approved = false THEN
+      RETURN json_build_object(
+        'status', 'invalid',
+        'message', 'Booking has been rejected',
+        'isValid', false,
+        'ticketCode', v_ticket.ticket_number,
+        'attendeeName', v_ticket.customer_name,
+        'ticketType', 'Bulk Ticket',
+        'eventName', v_batch.event_title,
+        'errorReason', 'This booking was rejected and cannot be used'
+      );
+    END IF;
+  END IF;
+
+  -- Check if ticket is valid
+  IF NOT v_ticket.is_valid THEN
+    RETURN json_build_object(
+      'status', 'invalid',
+      'message', 'Ticket has been invalidated',
+      'isValid', false,
+      'ticketCode', v_ticket.ticket_number,
+      'attendeeName', v_ticket.customer_name,
+      'ticketType', 'Bulk Ticket',
+      'eventName', v_batch.event_title,
+      'errorReason', 'Ticket was cancelled by vendor'
+    );
+  END IF;
+
+  -- Check if already used (return warning but don't block)
+  IF v_ticket.is_used THEN
+    RETURN json_build_object(
+      'status', 'already_scanned',
+      'message', 'Ticket already used',
+      'isValid', false,
+      'ticketCode', v_ticket.ticket_number,
+      'attendeeName', v_ticket.customer_name,
+      'ticketType', 'Bulk Ticket',
+      'eventName', v_batch.event_title,
+      'previousScanTime', v_ticket.used_at,
+      'scannedBy', p_scanner_id,
+      'errorReason', 'This ticket was already scanned at ' || to_char(v_ticket.used_at, 'HH24:MI:SS')
+    );
+  END IF;
+
+  -- Mark as used
+  UPDATE bulk_tickets
+  SET is_used = TRUE, used_at = NOW()
+  WHERE id = v_ticket.id;
+
+  -- Return success
+  RETURN json_build_object(
+    'status', 'valid',
+    'message', 'Ticket verified - ALLOW ENTRY (Manual Entry)',
+    'isValid', true,
+    'ticketCode', v_ticket.ticket_number,
+    'attendeeName', v_ticket.customer_name,
+    'ticketType', 'Bulk Ticket - ₹' || v_ticket.ticket_price::text,
+    'eventName', v_batch.event_title,
+    'venue', v_batch.venue,
+    'eventDate', v_ticket.event_date::text
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;

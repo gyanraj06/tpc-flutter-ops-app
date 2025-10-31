@@ -8,6 +8,7 @@ import '../../../../core/theme/text_styles.dart';
 import '../../../../core/utils/haptic_feedback.dart';
 import '../../domain/entities/scan_result.dart';
 import '../providers/scanner_provider.dart';
+import '../widgets/manual_entry_dialog.dart';
 import 'dart:async';
 
 class ScannerScreen extends ConsumerStatefulWidget {
@@ -109,6 +110,44 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
     });
   }
 
+  Future<void> _processManualEntry(String ticketNumber) async {
+    final result = await ref.read(scannerActionsProvider).scanTicketManually(ticketNumber);
+
+    setState(() {
+      _currentResult = result;
+      _showResult = true;
+    });
+
+    // Haptic feedback
+    switch (result.status) {
+      case ScanStatus.valid:
+        AppHapticFeedback.success();
+        break;
+      case ScanStatus.alreadyScanned:
+        AppHapticFeedback.warning();
+        break;
+      case ScanStatus.invalid:
+        AppHapticFeedback.error();
+        break;
+    }
+
+    // Auto-dismiss after 3 seconds
+    Timer(const Duration(seconds: 3), () {
+      if (mounted) {
+        setState(() => _showResult = false);
+      }
+    });
+  }
+
+  void _showManualEntryDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => ManualEntryDialog(
+        onSubmit: _processManualEntry,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -147,18 +186,36 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
             child: Container(),
           ),
 
-          // Instruction text
+          // Instruction text and manual entry button
           Positioned(
             bottom: 200,
             left: 0,
             right: 0,
-            child: Center(
-              child: Text(
-                'Point camera at QR code',
-                style: AppTextStyles.titleMedium.copyWith(
-                  color: AppColors.white,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Point camera at QR code',
+                  style: AppTextStyles.titleMedium.copyWith(
+                    color: AppColors.white,
+                  ),
                 ),
-              ),
+                const SizedBox(height: 20),
+                ElevatedButton.icon(
+                  onPressed: _showManualEntryDialog,
+                  icon: const Icon(Icons.keyboard, size: 20),
+                  label: const Text('Manual Entry'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primaryLight,
+                    foregroundColor: AppColors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    elevation: 4,
+                  ),
+                ),
+              ],
             ),
           ),
 
