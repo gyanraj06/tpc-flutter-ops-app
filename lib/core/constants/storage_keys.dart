@@ -11,4 +11,5 @@ class StorageKeys {
   static const String hapticEnabled = 'haptic_enabled';
   static const String darkMode = 'dark_mode';
   static const String lastSyncTime = 'last_sync_time';
+  static const String scanHistory = 'scan_history';
 }

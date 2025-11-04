@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 enum ScanStatus { valid, alreadyScanned, invalid }
 enum ScanMethod { qr, manual }
 
@@ -77,6 +79,42 @@ class ScanResult {
       errorReason: errorReason ?? 'Ticket not found in database',
       scannedAt: DateTime.now(),
       scanMethod: scanMethod,
+    );
+  }
+
+  // JSON Serialization
+  Map<String, dynamic> toJson() {
+    return {
+      'status': status.name,
+      'ticketCode': ticketCode,
+      'attendeeName': attendeeName,
+      'ticketType': ticketType,
+      'eventName': eventName,
+      'previousScanTime': previousScanTime?.toIso8601String(),
+      'scannedBy': scannedBy,
+      'errorReason': errorReason,
+      'scannedAt': scannedAt.toIso8601String(),
+      'scanMethod': scanMethod.name,
+    };
+  }
+
+  factory ScanResult.fromJson(Map<String, dynamic> json) {
+    return ScanResult(
+      status: ScanStatus.values.firstWhere((e) => e.name == json['status']),
+      ticketCode: json['ticketCode'],
+      attendeeName: json['attendeeName'],
+      ticketType: json['ticketType'],
+      eventName: json['eventName'],
+      previousScanTime: json['previousScanTime'] != null
+          ? DateTime.parse(json['previousScanTime'])
+          : null,
+      scannedBy: json['scannedBy'],
+      errorReason: json['errorReason'],
+      scannedAt: DateTime.parse(json['scannedAt']),
+      scanMethod: ScanMethod.values.firstWhere(
+        (e) => e.name == json['scanMethod'],
+        orElse: () => ScanMethod.qr,
+      ),
     );
   }
 }

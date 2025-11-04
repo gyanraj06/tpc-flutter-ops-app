@@ -189,26 +189,8 @@ BEGIN
     );
   END IF;
 
-  -- Check booking approval status if booking_id exists
-  IF v_ticket.booking_id IS NOT NULL THEN
-    SELECT is_approved INTO v_booking
-    FROM bookings
-    WHERE id = v_ticket.booking_id;
-
-    -- If booking exists and is explicitly rejected (is_approved = false)
-    IF v_booking.is_approved = false THEN
-      RETURN json_build_object(
-        'status', 'invalid',
-        'message', 'Booking has been rejected',
-        'isValid', false,
-        'ticketCode', v_ticket.ticket_number,
-        'attendeeName', v_ticket.customer_name,
-        'ticketType', 'Bulk Ticket',
-        'eventName', v_batch.event_title,
-        'errorReason', 'This booking was rejected and cannot be used'
-      );
-    END IF;
-  END IF;
+  -- Note: Booking approval check removed as bulk_tickets table doesn't have booking_id
+  -- This validation is only for bulk tickets which don't require booking approval
 
   -- Check if ticket is valid
   IF NOT v_ticket.is_valid THEN

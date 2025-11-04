@@ -10,7 +10,37 @@ class ScannerRepository {
   final SharedPreferences _prefs;
   final List<ScanResult> _scanHistory = [];
 
-  ScannerRepository(this._prefs);
+  ScannerRepository(this._prefs) {
+    _loadScanHistory();
+  }
+
+  /// Load scan history from SharedPreferences
+  void _loadScanHistory() {
+    try {
+      final historyJson = _prefs.getString(StorageKeys.scanHistory);
+      if (historyJson != null) {
+        final List<dynamic> decoded = jsonDecode(historyJson);
+        _scanHistory.clear();
+        _scanHistory.addAll(
+          decoded.map((item) => ScanResult.fromJson(item as Map<String, dynamic>)),
+        );
+        AppLogger.info('Loaded ${_scanHistory.length} scans from storage');
+      }
+    } catch (e, stackTrace) {
+      AppLogger.error('Error loading scan history', error: e, stackTrace: stackTrace);
+    }
+  }
+
+  /// Save scan history to SharedPreferences
+  Future<void> _saveScanHistory() async {
+    try {
+      final encoded = jsonEncode(_scanHistory.map((scan) => scan.toJson()).toList());
+      await _prefs.setString(StorageKeys.scanHistory, encoded);
+      AppLogger.info('Saved ${_scanHistory.length} scans to storage');
+    } catch (e, stackTrace) {
+      AppLogger.error('Error saving scan history', error: e, stackTrace: stackTrace);
+    }
+  }
 
   /// Validate ticket by calling Supabase function
   Future<ScanResult> validateTicket(String qrCode) async {
@@ -89,6 +119,9 @@ class ScannerRepository {
       // Add to history
       _scanHistory.insert(0, scanResult);
 
+      // Save to persistent storage
+      await _saveScanHistory();
+
       AppLogger.info('Scan result: ${scanResult.status}');
       return scanResult;
 
@@ -101,6 +134,10 @@ class ScannerRepository {
       );
 
       _scanHistory.insert(0, scanResult);
+
+      // Save to persistent storage
+      await _saveScanHistory();
+
       return scanResult;
     }
   }
@@ -196,6 +233,9 @@ class ScannerRepository {
       // Add to history
       _scanHistory.insert(0, scanResult);
 
+      // Save to persistent storage
+      await _saveScanHistory();
+
       AppLogger.info('Manual scan result: ${scanResult.status}');
       return scanResult;
 
@@ -209,6 +249,10 @@ class ScannerRepository {
       );
 
       _scanHistory.insert(0, scanResult);
+
+      // Save to persistent storage
+      await _saveScanHistory();
+
       return scanResult;
     }
   }

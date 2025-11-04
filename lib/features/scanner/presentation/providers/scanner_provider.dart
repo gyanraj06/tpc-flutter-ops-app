@@ -11,22 +11,23 @@ final scannerRepositoryProvider = Provider<ScannerRepository>((ref) {
 
 // Scan History Provider
 final scanHistoryProvider = StateProvider<List<ScanResult>>((ref) {
-  return [];
+  // Load initial history from repository
+  final repository = ref.watch(scannerRepositoryProvider);
+  return repository.getScanHistory();
 });
 
 // Stats Provider
 final statsProvider = StateProvider<Map<String, int>>((ref) {
-  return {
-    'total': 0,
-    'valid': 0,
-    'invalid': 0,
-    'duplicate': 0,
-  };
+  // Load initial stats from repository
+  final repository = ref.watch(scannerRepositoryProvider);
+  return repository.getStats();
 });
 
 // Today Scans Count Provider
 final todayScansCountProvider = StateProvider<int>((ref) {
-  return 0;
+  // Load initial count from repository
+  final repository = ref.watch(scannerRepositoryProvider);
+  return repository.getTodayScansCount();
 });
 
 // Scanner Actions

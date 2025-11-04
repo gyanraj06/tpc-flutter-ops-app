@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'core/theme/app_theme.dart';
 import 'core/router/app_router.dart';
+import 'core/services/audio_service.dart';
 import 'features/auth/presentation/providers/auth_provider.dart';
 
 void main() async {
@@ -24,6 +25,9 @@ void main() async {
 
   // Initialize SharedPreferences
   final prefs = await SharedPreferences.getInstance();
+
+  // Initialize AudioService
+  await AudioService().initialize(prefs);
 
   runApp(
     ProviderScope(

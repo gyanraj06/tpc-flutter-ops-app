@@ -56,7 +56,8 @@ class HomeScreen extends ConsumerWidget {
               // Greeting
               Text(
                 _getGreeting(),
-                style: AppTextStyles.bodyMedium.copyWith(color: AppColors.grey600),
+                style:
+                    AppTextStyles.bodyMedium.copyWith(color: AppColors.grey600),
               ),
               const SizedBox(height: 4),
               Text(
@@ -81,7 +82,8 @@ class HomeScreen extends ConsumerWidget {
                     children: [
                       Text(
                         "Today's Stats",
-                        style: AppTextStyles.titleLarge.copyWith(color: AppColors.white),
+                        style: AppTextStyles.titleLarge
+                            .copyWith(color: AppColors.white),
                       ),
                       const SizedBox(height: 16),
                       Row(
@@ -117,7 +119,7 @@ class HomeScreen extends ConsumerWidget {
               GestureDetector(
                 onTap: () => context.push(RouteConstants.scanner),
                 child: Container(
-                  height: 200,
+                  height: 180,
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
                       colors: [AppColors.primary, AppColors.accent],
@@ -137,21 +139,21 @@ class HomeScreen extends ConsumerWidget {
                       children: [
                         const Icon(
                           Icons.qr_code_scanner,
-                          size: 72,
+                          size: 64,
                           color: AppColors.white,
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 12),
                         Text(
-                          'START SCAN',
+                          'SCAN QR CODE',
                           style: AppTextStyles.headlineMedium.copyWith(
                             color: AppColors.white,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 2,
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 4),
                         Text(
-                          'Tap to scan ticket',
+                          'Tap to start camera',
                           style: AppTextStyles.bodyMedium.copyWith(
                             color: AppColors.white.withOpacity(0.8),
                           ),
@@ -232,40 +234,63 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildHistoryItem(scan) {
+  Widget _buildHistoryItem(ScanResult scan) {
     IconData icon;
     Color color;
+    String statusText;
 
     switch (scan.status) {
       case ScanStatus.valid:
         icon = Icons.check_circle;
         color = AppColors.success;
+        statusText = 'Valid';
         break;
       case ScanStatus.alreadyScanned:
         icon = Icons.warning;
         color = AppColors.warning;
+        statusText = 'Already Scanned';
         break;
       default:
         icon = Icons.error;
         color = AppColors.error;
+        statusText = 'Invalid';
     }
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
-        leading: CircleAvatar(
-          backgroundColor: color.withOpacity(0.1),
+        leading: Container(
+          width: 48,
+          height: 48,
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+          ),
           child: Icon(icon, color: color),
         ),
         title: Text(
-          scan.attendeeName ?? 'Invalid Code',
+          scan.attendeeName ?? scan.ticketCode ?? 'Invalid Code',
           style: AppTextStyles.titleMedium,
         ),
-        subtitle: Text(
-          _formatTime(scan.scannedAt),
-          style: AppTextStyles.bodyMedium.copyWith(color: AppColors.grey600),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (scan.ticketCode != null)
+              Text(
+                scan.ticketCode!,
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: AppColors.grey600,
+                  fontFamily: 'monospace',
+                ),
+              ),
+            Text(
+              '$statusText • ${_formatTime(scan.scannedAt)}',
+              style: AppTextStyles.caption.copyWith(
+                color: AppColors.grey500,
+              ),
+            ),
+          ],
         ),
-        trailing: const Icon(Icons.chevron_right, color: AppColors.grey400),
       ),
     );
   }
@@ -302,7 +327,8 @@ class HomeScreen extends ConsumerWidget {
                 const SizedBox(height: 12),
                 Text(
                   userName,
-                  style: AppTextStyles.titleLarge.copyWith(color: AppColors.white),
+                  style:
+                      AppTextStyles.titleLarge.copyWith(color: AppColors.white),
                 ),
                 Text(
                   ref.watch(authProvider).user?.email ?? '',
@@ -340,7 +366,8 @@ class HomeScreen extends ConsumerWidget {
           const Divider(),
           ListTile(
             leading: const Icon(Icons.logout, color: AppColors.error),
-            title: const Text('Logout', style: TextStyle(color: AppColors.error)),
+            title:
+                const Text('Logout', style: TextStyle(color: AppColors.error)),
             onTap: () {
               showDialog(
                 context: context,
