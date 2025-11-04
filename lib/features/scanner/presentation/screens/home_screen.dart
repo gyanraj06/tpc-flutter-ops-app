@@ -309,36 +309,31 @@ class HomeScreen extends ConsumerWidget {
     return Drawer(
       child: Column(
         children: [
-          DrawerHeader(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [AppColors.primary, AppColors.primaryLight],
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    userName,
+                    style: AppTextStyles.titleLarge.copyWith(
+                      color: AppColors.grey900,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    ref.watch(authProvider).user?.email ?? '',
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: AppColors.grey600,
+                    ),
+                  ),
+                ],
               ),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                const CircleAvatar(
-                  radius: 36,
-                  backgroundColor: AppColors.white,
-                  child: Icon(Icons.person, size: 40, color: AppColors.primary),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  userName,
-                  style:
-                      AppTextStyles.titleLarge.copyWith(color: AppColors.white),
-                ),
-                Text(
-                  ref.watch(authProvider).user?.email ?? '',
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: AppColors.white.withOpacity(0.8),
-                  ),
-                ),
-              ],
-            ),
           ),
+          const Divider(height: 1),
           ListTile(
             leading: const Icon(Icons.home),
             title: const Text('Home'),

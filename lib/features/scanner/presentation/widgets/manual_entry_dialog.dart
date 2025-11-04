@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/text_styles.dart';
 
@@ -21,9 +20,6 @@ class _ManualEntryDialogState extends State<ManualEntryDialog> {
   bool _isLoading = false;
   String? _errorMessage;
 
-  // Regex for PREFIX-NUMBER format (e.g., MT-123, EVENT-1000)
-  final _ticketRegex = RegExp(r'^[A-Z]{2,5}-\d+$', caseSensitive: false);
-
   @override
   void dispose() {
     _ticketController.dispose();
@@ -35,17 +31,9 @@ class _ManualEntryDialogState extends State<ManualEntryDialog> {
       return 'Please enter a ticket number';
     }
 
-    // Remove spaces
-    value = value.trim().toUpperCase();
-
-    // Length validation (4-20 characters)
-    if (value.length < 4 || value.length > 20) {
-      return 'Ticket number must be 4-20 characters';
-    }
-
-    // Format validation (PREFIX-NUMBER)
-    if (!_ticketRegex.hasMatch(value)) {
-      return 'Invalid format. Use PREFIX-NUMBER (e.g., MT-123)';
+    // Just check if not empty after trimming
+    if (value.trim().isEmpty) {
+      return 'Please enter a ticket number';
     }
 
     return null;
@@ -159,7 +147,7 @@ class _ManualEntryDialogState extends State<ManualEntryDialog> {
                   TextFormField(
                     controller: _ticketController,
                     decoration: InputDecoration(
-                      hintText: 'e.g., MT-001, EVENT-1000',
+                      hintText: 'Enter ticket number',
                       hintStyle: AppTextStyles.bodyMedium.copyWith(
                         color: AppColors.grey400,
                       ),
@@ -193,13 +181,8 @@ class _ManualEntryDialogState extends State<ManualEntryDialog> {
                     style: AppTextStyles.bodyLarge.copyWith(
                       color: AppColors.grey900,
                       fontWeight: FontWeight.w600,
-                      letterSpacing: 1.2,
                     ),
                     textCapitalization: TextCapitalization.characters,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z0-9\-]')),
-                      LengthLimitingTextInputFormatter(20),
-                    ],
                     validator: _validateTicketNumber,
                     autofocus: true,
                     textInputAction: TextInputAction.done,
@@ -228,7 +211,7 @@ class _ManualEntryDialogState extends State<ManualEntryDialog> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            'Format: PREFIX-NUMBER (2-5 letters, hyphen, digits)',
+                            'Enter the ticket number in any format',
                             style: AppTextStyles.caption.copyWith(
                               color: AppColors.info,
                             ),
